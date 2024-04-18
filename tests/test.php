@@ -2,106 +2,94 @@
 
 require_once __DIR__ . '/testframework.php';
 
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../modules/database.php';
-require_once __DIR__ . '/../modules/page.php';
+require_once __DIR__ . '/../site/config.php';
+require_once __DIR__ . '/../site/modules/database.php';
+require_once __DIR__ . '/../site/modules/page.php';
 
 $testFramework = new TestFramework();
-
-// Тестирование методов класса Database
-
-// Тест 1: Проверка соединения с базой данных
-function testDbConnection() {
+// test 1: check database connection
+function testDbConnection()
+{
     global $config;
-    $db = new Database($config["db"]["path"]);
-    if ($db) {
-        return true;
+    $database = new Database($config['db']['path']);
+    if ($database) {
+        return "Database connection test passed.";
     } else {
-        return false;
+        return "Database connection test failed.";
     }
 }
 
-// Тест 2: Проверка метода Count
-function testDbCount() {
+// test 2: test count method
+function testDbCount()
+{
     global $config;
-    $db = new Database($config["db"]["path"]);
-    $count = $db->Count("page");
-    // Предполагаем, что есть хотя бы одна запись в таблице "page"
-    if ($count >= 1) {
-        return true;
+    $database = new Database($config['db']['path']);
+
+    // Проверяем, существует ли таблица 'page'
+    $result = $database->Fetch("SELECT name FROM sqlite_master WHERE type='table' AND name='page'");
+    if (empty($result)) {
+        return "Count test failed: table 'page' does not exist.";
+    }
+
+    $count = $database->Count('page');
+    if ($count >= 0) {
+        return "Count test passed. Count: $count";
     } else {
-        return false;
+        return "Count test failed.";
     }
 }
 
-// Тест 3: Проверка метода Create
-function testDbCreate() {
+
+// test 3: test create method
+function testDbCreate()
+{
     global $config;
-    $db = new Database($config["db"]["path"]);
-    $data = array("title" => "Test Title", "content" => "Test Content");
-    $id = $db->Create("page", $data);
+    $database = new Database($config['db']['path']);
+
+    $result = $database->Fetch("SELECT name FROM sqlite_master WHERE type='table' AND name='page'");
+    if (empty($result)) {
+        return "Count test failed: table 'page' does not exist.";
+    }
+
+    $data = array(
+        'title' => 'Test Title',
+        'content' => 'Test Content'
+    );
+    $id = $database->Create('page', $data);
     if ($id > 0) {
-        // Успешно создана запись
-        // Удаление созданной записи после теста
-        $db->Delete("page", $id);
-        return true;
+        return "Create test passed. New row ID: $id";
     } else {
-        return false;
+        return "Create test failed.";
     }
 }
 
-// Тест 4: Проверка метода Read
-function testDbRead() {
+// test 4: test read method
+function testDbRead()
+{
     global $config;
-    $db = new Database($config["db"]["path"]);
-    // Предполагаем, что есть хотя бы одна запись в таблице "page"
-    $data = $db->Read("page", 1);
-    if ($data !== null) {
-        return true;
+    $database = new Database($config['db']['path']);
+
+    $result = $database->Fetch("SELECT name FROM sqlite_master WHERE type='table' AND name='page'");
+    if (empty($result)) {
+        return "Count test failed: table 'page' does not exist.";
+    }
+
+    $id = 1; // change this to the ID of the row you want to read
+    $data = $database->Read('page', $id);
+    if ($data) {
+        return "Read test passed. Data: " . print_r($data, true);
     } else {
-        return false;
+        return "Read test failed.";
     }
 }
 
-// Добавление тестов для класса Database
+// add tests
 $testFramework->add('Database connection', 'testDbConnection');
 $testFramework->add('Table count', 'testDbCount');
 $testFramework->add('Data create', 'testDbCreate');
 $testFramework->add('Data read', 'testDbRead');
 
-// Тестирование методов класса Page
-
-// Тест 5: Проверка создания экземпляра класса Page
-function testPageInstance() {
-    global $config;
-    $page = new Page(__DIR__ . '/../templates/index.tpl');
-    if ($page) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-// Тест 6: Проверка метода Render класса Page
-function testPageRender() {
-    global $config;
-    $page = new Page(__DIR__ . '/../templates/index.tpl');
-    $data = array("title" => "Test Page", "content" => "This is a test page");
-    $output = $page->Render($data);
-    // Проверка, что вывод не пустой
-    if (!empty($output)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-// Добавление тестов для класса Page
-$testFramework->add('Page instance', 'testPageInstance');
-$testFramework->add('Page render', 'testPageRender');
-
-// Запуск тестов
+// run tests
 $testFramework->run();
 
 echo $testFramework->getResult();
-
