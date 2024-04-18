@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build the Docker image
-        run: docker build -t containers07 .
+        run: docker-compose build -t containers07 .
       - name: Create `container`
         run: docker create --name container --volume database:/var/www/db containers07
       - name: Copy tests to the container
