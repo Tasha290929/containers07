@@ -11,17 +11,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Docker Compose
+        uses: docker/compose-cli@v0.1.1
       - name: Build the Docker image
-        run: docker-compose build -t containers07 .
-      - name: Create `container`
-        run: docker create --name container --volume database:/var/www/db containers07
+        run: docker-compose build --parallel
+      - name: Create and start container
+        run: docker-compose up -d --no-start
+      - name: Attach volume to container
+        run: docker-compose run --no-deps --rm php mkdir -p /var/www/db && docker-compose run --no-deps --rm php cp -r /var/www/html/database /var/www/db
+      - name: Start container
+        run: docker-compose start
       - name: Copy tests to the container
         run: docker cp ./tests container:/var/www/html
-      - name: Up the container
-        run: docker start container
       - name: Run tests
-        run: docker exec container php /var/www/html/tests/tests.php
-      - name: Stop the container
-        run: docker stop container
-      - name: Remove the container
-        run: docker rm container
+        run: docker-compose exec php php /var/www/html/tests/tests.php
+      - name: Stop and remove the container
+        run: docker-compose down
