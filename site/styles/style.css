@@ -1,0 +1,21 @@
+/* styles/style.css */
+
+/* Стили для контейнера */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Стили для заголовка */
+h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+/* Стили для содержимого */
+.content {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+}
