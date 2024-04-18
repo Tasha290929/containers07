@@ -14,7 +14,7 @@ jobs:
       - name: Build the Docker image
         run: docker build -t containers07 .
       - name: Create `container`
-        run: docker run -v $(pwd)/tests:/var/www/html/tests containers07 php /var/www/html/tests/test.php
+        run: docker create --name container --volume database:/var/www/db containers07
       - name: Copy tests to the container
         run: docker cp ./tests container:/var/www/html
       - name: Up the container
