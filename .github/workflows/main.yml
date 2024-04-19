@@ -15,10 +15,10 @@ jobs:
         run: docker-compose build -t containers07 .
       - name: Create `container`
         run: docker-compose create --name container --volume database:/var/www/db containers07
-      - name: Copy tests2 to the container
-        run: docker-compose cp ./tests/testframework.php container:/var/www/html
       - name: Copy tests to the container
         run: docker-compose cp ./tests/test.php container:/var/www/html
+      - name: Copy tests2 to the container
+        run: docker-compose cp ./tests/testframework.php container:/var/www/html
       - name: Up the container
         run: ddocker-compose up -d
       - name: Run tests
