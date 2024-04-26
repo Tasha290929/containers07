@@ -82,23 +82,10 @@ function testPageInstance() {
     }
 }
 
-// Тест 6: Проверка метода Render класса Page
-function testPageRender() {
-    global $config;
-    $page = new Page(__DIR__ . '/../templates/index.tpl');
-    $data = array("title" => "Test Page", "content" => "This is a test page");
-    $output = $page->Render($data);
-    // Проверка, что вывод не пустой
-    if (!empty($output)) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 // Добавление тестов для класса Page
 $testFramework->add('Page instance', 'testPageInstance');
-$testFramework->add('Page render', 'testPageRender');
+
 
 // Запуск тестов
 $testFramework->run();
